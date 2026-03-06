@@ -101,14 +101,13 @@ def play_game(): #🚀
             name2 = "Computer🖥️"
         else:                # PLAYER VS PLAYER
             name2 = input(f"{BLUE}Enter Player 2 name:\n{RESET}").capitalize()
-        # CHOOSING A SYMBOL
         current_player_num = 1
-        while True:
-            # USUALLY, THE PLAYER WITH ❌ GOES FIRST
-            print(f'\n{YELLOW}*** ❌ makes the first move!!!{RESET}')
+        # USUALLY, THE PLAYER WITH ❌ GOES FIRST
+        print(f'\n{YELLOW}*** ❌ makes the first move!!!{RESET}')
+        while True: # CHOOSING A VALID SYMBOL
             symbol1 = input(f"{YELLOW}{name1} -> type [1-❌] or type [2-⭕] ? {RESET}")
             if symbol1 != "1" and symbol1 != "2":
-                print(f'{RED}invalid choice, please enter (1 or 2){RESET}')
+                print(f'{RED}invalid choice, please type (1 or 2){RESET}\n')
                 continue
             if symbol1 == "1":
                 symbol1 , symbol2 = ("❌" ,"⭕")
@@ -117,9 +116,10 @@ def play_game(): #🚀
                 symbol1 , symbol2 = ("⭕" ,"❌")
                 current_player_num = 2
                 break
+        time.sleep(1)
         print(f'\n{RED}if you wish to restart the game, enter [r] or [reset]{RESET}')
         print(f"{BLUE}{name1}'s symbol is{symbol1}  |  {name2}'s symbol is{symbol2}{RESET}\n")
-        time.sleep(1)
+        time.sleep(2)
         board = create_board()
         game_on = True
         while game_on:
