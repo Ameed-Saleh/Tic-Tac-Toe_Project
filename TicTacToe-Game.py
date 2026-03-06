@@ -102,8 +102,11 @@ def play_game(): #🚀
         else:                # PLAYER VS PLAYER
             name2 = input(f"{BLUE}Enter Player 2 name:\n{RESET}").capitalize()
         # CHOOSING A SYMBOL
+        current_player_num = 1
         while True:
-            symbol1 = input(f"{YELLOW}{name1}  if you want to be ❌[type-1] or ⭕[type-2] ? {RESET}")
+            # USUALLY, THE PLAYER WITH ❌ GOES FIRST
+            print(f'\n{YELLOW}*** ❌ makes the first move!!!{RESET}')
+            symbol1 = input(f"{YELLOW}{name1} -> type [1-❌] or type [2-⭕] ? {RESET}")
             if symbol1 != "1" and symbol1 != "2":
                 print(f'{RED}invalid choice, please enter (1 or 2){RESET}')
                 continue
@@ -112,12 +115,12 @@ def play_game(): #🚀
                 break
             else:
                 symbol1 , symbol2 = ("⭕" ,"❌")
+                current_player_num = 2
                 break
         print(f'\n{RED}if you wish to restart the game, enter [r] or [reset]{RESET}')
         print(f"{BLUE}{name1}'s symbol is{symbol1}  |  {name2}'s symbol is{symbol2}{RESET}\n")
         time.sleep(1)
         board = create_board()
-        current_player_num = 1
         game_on = True
         while game_on:
             # START GAME WITH THE GIVEN NAMES AND SYMBOLS
