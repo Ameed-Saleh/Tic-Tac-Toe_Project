@@ -10,23 +10,39 @@ CYAN = "\033[36m"
 LIME = "\033[93m"
 RESET = "\033[0;0m"
 
-def create_board(): #🧊
-    board = ['1 ','2 ','3 ','4 ' ,'5 ','6 ','7 ','8 ','9 ']
+def create_board() -> list: #🧊
+    '''
+    :return: board at list
+    '''
+    board: list = ['1 ','2 ','3 ','4 ' ,'5 ','6 ','7 ','8 ','9 ']
     return board
 
-def print_board(board) : #🖼️
+def print_board(board) -> None: #🖼️
+    '''
+    prints the current board
+    :param board: Running on the board with a loop for
+    :return: None
+    '''
     for i in range(0, 9, 3):
         print(f"{CYAN}     {board[i]} | {board[i + 1]} | {board[i + 2]}{RESET}")
         if i < 6:
             print(f"{CYAN}    ----+----+----{RESET}")
 
-def display_menu():
+def display_menu() -> None:
+    '''
+    print menu
+    :return: None
+    '''
     print(f"\n{PURPLE}game mode menu💣:{RESET}")
     print(f"{BLUE}1. Player vs Player{RESET}")
     print(f"{BLUE}2. Player vs Computer🖥️{RESET}")
     print(f"{RED}3. Exit{RESET}")
 
-def get_main_choice():
+def get_main_choice() ->str:
+    '''
+    validation the choice that be 1-2-3  and return it
+    :return: game mode choice (1 - 2 - 3)
+    '''
     while True:
         choice = input(f'{PURPLE}\nChoose game mode [1-2-3]:{RESET}')
         if choice == '3':
@@ -36,7 +52,14 @@ def get_main_choice():
         print(f'{RED}invalid choice please try again [1-2-3]{RESET}')
     return choice
 
-def get_player_move(player_name, sympol , board) : #🎮
+def get_player_move(player_name, sympol , board)-> int | str | None: #🎮
+    '''
+    Ask the players to choose a spot or to reset the game
+    :param player_name: str - name of the players
+    :param sympol: "❌" , "⭕"
+    :param board: check the spot in the board
+    :return: move that be valid number (1 - 9)
+    '''
     while True:
         choice = input(f"{BLUE}->{player_name}[{sympol}] choose a spot (1-9): \n{RESET}")
         if choice.lower() == "reset" or choice.lower() == "r":
@@ -53,17 +76,33 @@ def get_player_move(player_name, sympol , board) : #🎮
             continue
         return move
 
-def get_computer_move(board): #🖥️
+def get_computer_move(board) ->str : #🖥️
+    '''
+    print board with the computer spot
+    :param board: Checking the board
+    :return: random choice for the computer
+    '''
     available_moves = []
     for comp in range(9):
         if board[comp] != "❌" and board[comp] != "⭕":
             available_moves.append(comp)
     return random.choice(available_moves)
 
-def make_move(board, position, symbol) : #🧲
+def make_move(board, position, symbol) -> None : #🧲
+    '''
+    :param board: updates the board
+    :param position: the number of the spot
+    :param symbol: ⭕ or ❌
+    :return: None
+    '''
     board[position] = symbol
 
-def check_winner(board, symbol): #🏆
+def check_winner(board, symbol) ->bool: #🏆
+    '''
+    :param board:  the board layout
+    :param symbol: ❌ ⭕
+    :return: str - true if one the symbol has 3 in a row by ROW ,COLUMN ,DIAGONAL
+    '''
     win_options = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8], # WIN BY ROW
         [0, 3, 6], [1, 4, 7], [2, 5, 8], # WIN BY COLUMN
@@ -74,11 +113,18 @@ def check_winner(board, symbol): #🏆
             return True
     return False
 
-def is_tie(board): #🤝
+def is_tie(board) ->bool: #🤝
+    '''
+    :param board: the board layout
+    :return: true if all the board  with  ❌, ⭕ and no winner, is a tie
+    '''
     return all(spot == "❌" or spot == "⭕" for spot in board)
 
 
-def play_game(): #🚀
+def play_game()-> None: #🚀
+    '''
+    :return: run the hole game
+    '''
     print(f"\n{MAROON}{BOLD} *** Welcome to Tic Tac Toe game‼️🚀 ***{RESET}")
     _round = 1 # THIS PARAMETER COUNT THE NUMBER OF GAMES
     # THIS THREE PARAMETERS FOR -> SCOREBOARD
