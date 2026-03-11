@@ -142,11 +142,23 @@ def play_game()-> None: #🚀
             print(f'{RED}GOOD BYE BABY! {RESET}')
             break
         # ENTER NAME FOR PLAYER
-        name1 = input(f"{BLUE}Enter Player 1 name:\n {RESET}").capitalize ()
-        if main_choice == '2': # PLAYER VS COMPUTER🖥️
+        while True:
+            name1 = str(input(f"{BLUE}Enter Player 1 name:\n {RESET}").capitalize())
+            if len(name1) <= 0 or name1.isdigit():
+                print(f"{RED}invalid name please try again! {RESET}")
+                continue
+            else:
+                break
+        if main_choice == '2':  # PLAYER VS COMPUTER🖥️
             name2 = "Computer🖥️"
-        else:                # PLAYER VS PLAYER
-            name2 = input(f"{BLUE}Enter Player 2 name:\n{RESET}").capitalize()
+        else:  # PLAYER VS PLAYER
+            while True:
+                name2 = str(input(f"{BLUE}Enter Player 2 name:\n {RESET}").capitalize())
+                if len(name2) <= 0 or name2.isdigit() or name2 == name1:
+                    print(f"{RED}invalid name please try again! {RESET}")
+                    continue
+                else:
+                    break
         current_player_num = 1
         # USUALLY, THE PLAYER WITH ❌ GOES FIRST
         print(f'\n{YELLOW}*** ❌ makes the first move!!!{RESET}')
