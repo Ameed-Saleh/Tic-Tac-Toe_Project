@@ -7,17 +7,23 @@ WIDTH, HEIGHT = 450, 600
 LINE_WIDTH = 7
 BOARD_SIZE = 450
 SQUARE_SIZE = BOARD_SIZE // 3
-CIRCLE_RADIUS = SQUARE_SIZE // 3
+
+# גודל הצורות
+CIRCLE_RADIUS = SQUARE_SIZE // 3.5
 CIRCLE_WIDTH = 12
-CROSS_WIDTH = 20
-SPACE = SQUARE_SIZE // 4
+CROSS_WIDTH = 18
+SPACE = SQUARE_SIZE // 3
 
 # --- צבעים ---
 BG_COLOR = (0, 0, 0)
 LINE_COLOR = (255, 255, 255)
 PLAYER_COLOR = (255, 0, 0)
 TEXT_COLOR = (255, 255, 255)
-SCORE_BG = (30, 30, 30)  # רקע כהה ללוח הניקוד
+SCORE_BG = (30, 30, 30)
+YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
+WIN_MSG_COLOR = (255, 215, 0)
+TIE_MSG_COLOR = (0, 191, 255)
 
 # משתני ניקוד
 scores = {"X": 0, "O": 0, "Ties": 0}
@@ -43,7 +49,7 @@ def draw_figures(screen, board):
         center_y = int(row * SQUARE_SIZE + SQUARE_SIZE // 2)
 
         if sym == "O":
-            pygame.draw.circle(screen, PLAYER_COLOR, (center_x, center_y), CIRCLE_RADIUS, CIRCLE_WIDTH)
+            pygame.draw.circle(screen, PLAYER_COLOR, (center_x, center_y), int(CIRCLE_RADIUS), CIRCLE_WIDTH)
         elif sym == "X":
             pygame.draw.line(screen, PLAYER_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE),
                              (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SPACE), CROSS_WIDTH)
@@ -53,29 +59,70 @@ def draw_figures(screen, board):
 
 
 def draw_scoreboard(screen, current_player, game_mode):
-    # ציור מלבן רקע ללוח הניקוד
+    # רקע ללוח הניקוד
     pygame.draw.rect(screen, SCORE_BG, (0, BOARD_SIZE, WIDTH, HEIGHT - BOARD_SIZE))
     pygame.draw.line(screen, LINE_COLOR, (0, BOARD_SIZE), (WIDTH, BOARD_SIZE), 3)
 
-    font = pygame.font.SysFont("Arial", 22, bold=True)
+    font = pygame.font.SysFont("Arial", 20, bold=True)
 
-    # יצירת טקסטים בצבעים שונים
-    x_score = font.render(f"X Wins: {scores['X']}", True, PLAYER_COLOR)
-    o_score = font.render(f"O Wins: {scores['O']}", True, PLAYER_COLOR)
-    ties_score = font.render(f"Ties: {scores['Ties']}", True, (200, 200, 200))  # אפור/לבן לתיקו
+    # יצירת הניקוד בחלקים
+    label_wins = font.render("Wins -> ", True, YELLOW)
 
-    mode_str = "VS Computer" if game_mode == "AI" else "Player vs Player"
-    turn_render = font.render(f"Turn: {current_player} ({mode_str})", True, (255, 255, 0))  # צהוב לתור הנוכחי
+    x_txt = font.render("X: ", True, RED)
+    x_val = font.render(f"{scores['X']}", True, YELLOW)
 
-    # מיקום הטקסטים
-    screen.blit(x_score, (20, BOARD_SIZE + 15))
-    screen.blit(o_score, (160, BOARD_SIZE + 15))
-    screen.blit(ties_score, (310, BOARD_SIZE + 15))
+    o_txt = font.render("O: ", True, RED)
+    o_val = font.render(f"{scores['O']}", True, YELLOW)
+
+    t_txt = font.render("Ties: ", True, RED)
+    t_val = font.render(f"{scores['Ties']}", True, YELLOW)
+
+    # מיקומים מחושבים לרווח שווה (Spacing)
+    start_y = BOARD_SIZE + 15
+    screen.blit(label_wins, (20, start_y))
+
+    # חלוקת השטח לשלושה עמודות שוות אחרי ה-"Wins ->"
+    col_x = 110
+    col_o = 210
+    col_ties = 310
+
+    # הדפסת X
+    screen.blit(x_txt, (col_x, start_y))
+    screen.blit(x_val, (col_x + 25, start_y))
+
+    # הדפסת O
+    screen.blit(o_txt, (col_o, start_y))
+    screen.blit(o_val, (col_o + 25, start_y))
+
+    # הדפסת Ties
+    screen.blit(t_txt, (col_ties, start_y))
+    screen.blit(t_val, (col_ties + 55, start_y))
+
+    # תור נוכחי
+    mode_str = "VS Computer" if game_mode == "AI" else "PvP"
+    turn_render = font.render(f"Turn: {current_player} ({mode_str})", True, (180, 180, 180))
     screen.blit(turn_render, (20, BOARD_SIZE + 50))
 
-    reset_font = pygame.font.SysFont("Arial", 14)
-    reset_render = reset_font.render("R: Restart | M: Menu", True, (150, 150, 150))
-    screen.blit(reset_render, (WIDTH - 150, HEIGHT - 25))
+
+def show_game_over(screen, winner):
+    overlay = pygame.Surface((WIDTH, BOARD_SIZE), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 200))
+    screen.blit(overlay, (0, 0))
+
+    font_big = pygame.font.SysFont("Arial", 45, bold=True)
+    font_small = pygame.font.SysFont("Arial", 22, bold=True)
+
+    if winner == "Tie":
+        text = font_big.render("IT'S A TIE!", True, TIE_MSG_COLOR)
+    else:
+        text = font_big.render(f"PLAYER {winner} WINS!", True, WIN_MSG_COLOR)
+
+    restart_text = font_small.render("Press 'R' to Restart", True, TEXT_COLOR)
+    menu_text = font_small.render("Press 'M' for Menu", True, TEXT_COLOR)
+
+    screen.blit(text, text.get_rect(center=(WIDTH // 2, BOARD_SIZE // 2 - 40)))
+    screen.blit(restart_text, restart_text.get_rect(center=(WIDTH // 2, BOARD_SIZE // 2 + 30)))
+    screen.blit(menu_text, menu_text.get_rect(center=(WIDTH // 2, BOARD_SIZE // 2 + 70)))
 
 
 def check_winner(board, symbol):
@@ -90,21 +137,22 @@ def is_tie(board):
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption('Tic Tac Toe - Colorful Scoreboard')
+    pygame.display.set_caption('Tic Tac Toe - Final Version')
 
     board = create_board()
     current_turn = "X"
     game_over = False
+    winner = None
     game_mode = None
 
     while True:
         if game_mode is None:
             screen.fill(BG_COLOR)
-            menu_font = pygame.font.SysFont("Arial", 30, bold=True)
-            t1 = menu_font.render("Press 1: vs Computer", True, PLAYER_COLOR)
-            t2 = menu_font.render("Press 2: vs Player", True, TEXT_COLOR)
-            screen.blit(t1, (WIDTH // 2 - 130, HEIGHT // 2 - 50))
-            screen.blit(t2, (WIDTH // 2 - 130, HEIGHT // 2 + 20))
+            menu_font = pygame.font.SysFont("Arial", 32, bold=True)
+            t1 = menu_font.render("1: VS Computer", True, PLAYER_COLOR)
+            t2 = menu_font.render("2: VS Player", True, TEXT_COLOR)
+            screen.blit(t1, (WIDTH // 2 - 110, HEIGHT // 2 - 60))
+            screen.blit(t2, (WIDTH // 2 - 110, HEIGHT // 2 + 10))
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -119,6 +167,9 @@ def main():
         draw_lines(screen)
         draw_figures(screen, board)
         draw_scoreboard(screen, current_turn, game_mode)
+
+        if game_over:
+            show_game_over(screen, winner)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -136,9 +187,11 @@ def main():
                         if check_winner(board, current_turn):
                             scores[current_turn] += 1
                             game_over = True
+                            winner = current_turn
                         elif is_tie(board):
                             scores["Ties"] += 1
                             game_over = True
+                            winner = "Tie"
                         else:
                             current_turn = "O" if current_turn == "X" else "X"
 
@@ -153,20 +206,24 @@ def main():
                                     if check_winner(board, "O"):
                                         scores["O"] += 1
                                         game_over = True
+                                        winner = "O"
                                     elif is_tie(board):
                                         scores["Ties"] += 1
                                         game_over = True
+                                        winner = "Tie"
                                     current_turn = "X"
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     board = create_board()
                     game_over = False
+                    winner = None
                     current_turn = "X"
                 if event.key == pygame.K_m:
                     game_mode = None
                     board = create_board()
                     game_over = False
+                    winner = None
                     current_turn = "X"
 
         pygame.display.update()
